@@ -27,7 +27,7 @@
         android:fontFamily="cursive"
         android:text="Good Will"
         android:textColor="@color/black"
-        android:textSize="34sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/imageView"
