@@ -36,7 +36,7 @@ class AddEventActivity : AppCompatActivity() {
             }else{
                 addEvent()
                 Toast.makeText(this, "Event Uploaded Successfully", Toast.LENGTH_SHORT).show()
-
+                finish()
             }
 
         }
