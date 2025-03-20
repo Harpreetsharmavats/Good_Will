@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/addEventFragment"
-        android:name="com.example.goodwill.Fragments.AddEventFragment"
+        android:name="com.example.goodwill.Fragments.EventFragment"
         android:label="fragment_add_event"
-        tools:layout="@layout/fragment_add_event" />
+        tools:layout="@layout/fragment_event" />
     <fragment
         android:id="@+id/listofContributorsFragment"
         android:name="com.example.goodwill.Fragments.ListofContributorsFragment"
