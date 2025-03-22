@@ -38,15 +38,18 @@ private lateinit var contributorsList : ArrayList<ContributorDetails>
         return binding.root
     }
     private fun showContributors() {
+        binding.progressBar.visibility = View.VISIBLE
         database = FirebaseDatabase.getInstance()
         contributorsList = ArrayList()
-        val eventRef: DatabaseReference = database.reference.child("Events")
+        val eventRef: DatabaseReference = database.reference.child("Contributors")
         eventRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (eventSnapshot in snapshot.children){
                     val events = eventSnapshot.getValue(ContributorDetails::class.java)
                     events?.let { contributorsList.add(it) }
                     setAdapter()
+                    binding.progressBar.visibility = View.GONE
+
                 }
             }
 

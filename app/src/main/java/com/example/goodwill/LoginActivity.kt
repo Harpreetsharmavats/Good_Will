@@ -2,6 +2,7 @@ package com.example.goodwill
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.goodwill.Models.AdminUser
@@ -36,16 +37,19 @@ class LoginActivity : AppCompatActivity() {
             email = binding.Email.editText?.text.toString().trim()
             password = binding.pass.editText?.text.toString().trim()
             signIn(email, password)
-            finish()
+
         }
 
     }
 
     private fun signIn(email: String, password: String) {
+        binding.progressBar.visibility = View.VISIBLE
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
             if (it.isSuccessful) {
+                binding.progressBar.visibility = View.GONE
                 Toast.makeText(this, "Login Successfully", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this, AdminMainActivity::class.java))
+                finish()
                 //savedetails()
             } else {
                 Toast.makeText(this, "Login Failed", Toast.LENGTH_SHORT).show()
@@ -62,4 +66,8 @@ val userId : String = FirebaseAuth.getInstance().currentUser!!.uid
         database.child("Admins").child(userId).setValue(user)
 
     }*/
+    override fun onStart() {
+        super.onStart()
+
+    }
 }

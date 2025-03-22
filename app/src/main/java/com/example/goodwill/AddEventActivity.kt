@@ -1,6 +1,7 @@
 package com.example.goodwill
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.goodwill.Models.AddEventDetails
@@ -25,7 +26,9 @@ class AddEventActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance()
 
         setContentView(binding.root)
-
+binding.backbtn.setOnClickListener {
+    finish()
+}
         binding.addEventBtn.setOnClickListener {
             eventName = binding.eventName.editText?.text.toString().trim()
             organizerName = binding.organizerName.editText?.text.toString().trim()
@@ -35,7 +38,6 @@ class AddEventActivity : AppCompatActivity() {
                 Toast.makeText(this, "Please Fill All The Details", Toast.LENGTH_SHORT).show()
             }else{
                 addEvent()
-                Toast.makeText(this, "Event Uploaded Successfully", Toast.LENGTH_SHORT).show()
                 finish()
             }
 
@@ -44,6 +46,7 @@ class AddEventActivity : AppCompatActivity() {
     }
 
     private fun addEvent() {
+        binding.progressBar.visibility = View.VISIBLE
         eventName = binding.eventName.editText?.text.toString().trim()
         organizerName = binding.organizerName.editText?.text.toString().trim()
         phoneNumber = binding.phoneNumber.editText?.text.toString().trim()
@@ -53,7 +56,13 @@ class AddEventActivity : AppCompatActivity() {
         val eventDetails = AddEventDetails(eventName,organizerName, phoneNumber, addressOfEvent,key)
 
         if (key != null) {
-           eventRef.child(key).setValue(eventDetails)
+           eventRef.child(key).setValue(eventDetails).addOnCompleteListener {
+               if (it.isSuccessful){
+                   binding.progressBar.visibility = View.GONE
+                   Toast.makeText(this, "Data Uploaded Successfully", Toast.LENGTH_SHORT).show()
+
+               }
+           }
         }
 
     }

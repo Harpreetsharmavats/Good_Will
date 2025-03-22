@@ -47,7 +47,8 @@ private lateinit var eventList : ArrayList<AddEventDetails>
     }
 
     private fun showEvents() {
-database = FirebaseDatabase.getInstance()
+        binding.progressBar.visibility = View.VISIBLE
+        database = FirebaseDatabase.getInstance()
         eventList = ArrayList()
         val eventRef: DatabaseReference = database.reference.child("Events")
         eventRef.addValueEventListener(object : ValueEventListener{
@@ -56,6 +57,8 @@ database = FirebaseDatabase.getInstance()
                     val events = eventSnapshot.getValue(AddEventDetails::class.java)
                     events?.let { eventList.add(it) }
                     setAdapter()
+                    binding.progressBar.visibility = View.GONE
+
                 }
             }
 
@@ -72,6 +75,7 @@ database = FirebaseDatabase.getInstance()
         binding.recyclerView.adapter = adapter
     }
     override fun onClickDelete(position: Int){
+
         val key = eventList[position].key
 val eventRef = database.getReference("Events").child(key!!)
         eventRef.removeValue().addOnCompleteListener {

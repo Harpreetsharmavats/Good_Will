@@ -26,7 +26,7 @@ class ContributorsAdapter (context: Context,private val details :List<Contributo
             binding.name.text = details[position].name
             binding.phoneNumber.text = details[position].phoneNumber
             binding.address.text = details[position].address
-            binding.amount.text = details[position].amount
+            binding.amount.text = "₹ "+ details[position].amount
             binding.eventName.text = details[position].event
         }
 
