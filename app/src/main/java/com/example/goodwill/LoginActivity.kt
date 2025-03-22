@@ -29,13 +29,14 @@ class LoginActivity : AppCompatActivity() {
 
         binding.continueAsContributor.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
-            finish()
+
         }
 
         binding.loginbtn.setOnClickListener {
             email = binding.Email.editText?.text.toString().trim()
             password = binding.pass.editText?.text.toString().trim()
             signIn(email, password)
+            finish()
         }
 
     }

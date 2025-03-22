@@ -1,6 +1,7 @@
 package com.example.goodwill
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -22,11 +23,11 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private lateinit var name:String
-    private lateinit var phoneNumber:String
-    private lateinit var address:String
-    private lateinit var email:String
-    private lateinit var amount:String
+    private lateinit var name: String
+    private lateinit var phoneNumber: String
+    private lateinit var address: String
+    private lateinit var email: String
+    private lateinit var amount: String
 
     private lateinit var database: FirebaseDatabase
     val eventName = mutableListOf<String>()
@@ -38,15 +39,11 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
 
         database = FirebaseDatabase.getInstance()
 
-        name = binding.name.editText?.text.toString().trim()
-        phoneNumber = binding.phonenumber.editText?.text.toString().trim()
-        address = binding.address.editText?.text.toString().trim()
-        email = binding.email.editText?.text.toString().trim()
-        amount = binding.amount.editText?.text.toString().trim()
+
 
         showEventsInAutoComplete()
         binding.backbtn.setOnClickListener {
-            finish()
+         finish()
         }
 
         binding.selectEvent.setOnFocusChangeListener { _, hasFocus ->
@@ -55,10 +52,16 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             }
         }
         binding.makecontribution.setOnClickListener {
-            if (name.isBlank() || phoneNumber.isBlank() || address.isBlank() || email.isBlank() || amount.isBlank()){
+            val event = binding.selectEvent.editableText.toString()
+            name = binding.name.editText?.text.toString().trim()
+            phoneNumber = binding.phonenumber.editText?.text.toString().trim()
+            address = binding.address.editText?.text.toString().trim()
+            email = binding.email.editText?.text.toString().trim()
+            amount = binding.amount.editText?.text.toString().trim()
+            if (event.isBlank() ||name.isBlank() || phoneNumber.isBlank() || address.isBlank() || email.isBlank() || amount.isBlank()) {
                 Toast.makeText(this, "Please Fill All Details!", Toast.LENGTH_SHORT).show()
-            }else{
-
+            } else {
+                startPayment()
             }
         }
 
@@ -100,16 +103,16 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
 
         try {
             val options = JSONObject()
-            options.put("name",name)
-            options.put("description","Donation")
-            options.put("image","http://example.com/image/rzp.jpg")
+            options.put("name", name)
+            options.put("description", "Donation")
+            options.put("image", "http://example.com/image/rzp.jpg")
             options.put("theme.color", "#3399CC")
-            options.put("currency","INR")
-            options.put("order_id", "order_DBJOWzybf0sJbb")
-            options.put("amount",amount)
-            options.put("prefill.address",address)
-            options.put("prefill.email",email)
-            options.put("prefill.contact",phoneNumber)
+            options.put("currency", "INR")
+            //options.put("amount", amount)
+            options.put("amount", (amount.toFloat() * 100).toInt()) // 500.0 INR => 50000 paise
+            options.put("prefill.address", address)
+            options.put("prefill.email", email)
+            options.put("prefill.contact", phoneNumber)
 
 
             val retryObj = JSONObject()
@@ -117,27 +120,45 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
             retryObj.put("max_count", 4)
             options.put("retry", retryObj)
 
-            checkout.open(activity,options)
-        }catch (e: Exception){
-            Toast.makeText(activity,"Error in payment: "+ e.message,Toast.LENGTH_LONG).show()
+            checkout.open(activity, options)
+        } catch (e: Exception) {
+            Toast.makeText(activity, "Error in payment: " + e.message, Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }
     }
 
     override fun onPaymentSuccess(p0: String?) {
+        Toast.makeText(this, "Payment Successful!", Toast.LENGTH_SHORT).show()
         saveDetails()
     }
 
     private fun saveDetails() {
+        val event = binding.selectEvent.editableText.toString()
         val time = System.currentTimeMillis()
         val key = database.reference.push().key
-val details = ContributorDetails(name,phoneNumber, address, email, amount,time,key)
 
-        database.reference.child("Contributors").child(key!!).setValue(details)
+        val details =
+            ContributorDetails(event, name, phoneNumber, address, email, amount, time, key)
+
+        database.reference.child("Contributors").child(key!!).setValue(details).addOnCompleteListener {
+            if (it.isSuccessful){
+                Toast.makeText(this, "Details Sent", Toast.LENGTH_SHORT).show()
+                clearDetails()
+            }
+        }
+    }
+
+    private fun clearDetails() {
+        binding.selectEvent.editableText?.clear()
+        binding.name.editText?.text?.clear()
+        binding.phonenumber.editText?.text?.clear()
+        binding.address.editText?.text?.clear()
+        binding.email.editText?.text?.clear()
+        binding.amount.editText?.text?.clear()
     }
 
     override fun onPaymentError(p0: Int, p1: String?) {
-        Log.d("Payment","Payment Failure $p0 $p1")
+        Toast.makeText(this, "Payment Failed: $p1", Toast.LENGTH_SHORT).show()
     }
 
 }
