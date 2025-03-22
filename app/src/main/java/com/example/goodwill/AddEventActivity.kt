@@ -38,7 +38,6 @@ binding.backbtn.setOnClickListener {
                 Toast.makeText(this, "Please Fill All The Details", Toast.LENGTH_SHORT).show()
             }else{
                 addEvent()
-                finish()
             }
 
         }
@@ -47,23 +46,27 @@ binding.backbtn.setOnClickListener {
 
     private fun addEvent() {
         binding.progressBar.visibility = View.VISIBLE
-        eventName = binding.eventName.editText?.text.toString().trim()
-        organizerName = binding.organizerName.editText?.text.toString().trim()
-        phoneNumber = binding.phoneNumber.editText?.text.toString().trim()
-        addressOfEvent = binding.addressOfEvent.editText?.text.toString().trim()
         val eventRef = database.getReference("Events")
         val key = eventRef.push().key
-        val eventDetails = AddEventDetails(eventName,organizerName, phoneNumber, addressOfEvent,key)
+        val eventDetails = AddEventDetails(eventName, organizerName, phoneNumber, addressOfEvent, key)
 
         if (key != null) {
-           eventRef.child(key).setValue(eventDetails).addOnCompleteListener {
-               if (it.isSuccessful){
-                   binding.progressBar.visibility = View.GONE
-                   Toast.makeText(this, "Data Uploaded Successfully", Toast.LENGTH_SHORT).show()
-
-               }
-           }
+            eventRef.child(key).setValue(eventDetails).addOnCompleteListener {
+                binding.progressBar.visibility = View.GONE
+                if (it.isSuccessful) {
+                    Toast.makeText(this, "Data Uploaded Successfully", Toast.LENGTH_SHORT).show()
+                    finish()  // Now it's safe to finish the activity
+                } else {
+                    Toast.makeText(this, "Upload Failed. Please try again.", Toast.LENGTH_SHORT).show()
+                }
+            }.addOnFailureListener {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            binding.progressBar.visibility = View.GONE
+            Toast.makeText(this, "Failed to generate event key.", Toast.LENGTH_SHORT).show()
         }
-
     }
+
 }

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.goodwill.Adapter.EventsAdapters
 import com.example.goodwill.AddEventActivity
+import com.example.goodwill.MainActivity
 import com.example.goodwill.Models.AddEventDetails
 import com.example.goodwill.databinding.FragmentEventBinding
 import com.google.firebase.database.DataSnapshot
@@ -39,6 +40,9 @@ private lateinit var eventList : ArrayList<AddEventDetails>
         binding.addEventBtn.setOnClickListener {
             startActivity(Intent(requireContext(), AddEventActivity::class.java))
         }
+        binding.contribute.setOnClickListener {
+            startActivity(Intent(requireContext(),MainActivity::class.java))
+        }
         //To Show and Delete the Event
         showEvents()
         return binding.root
@@ -51,15 +55,20 @@ private lateinit var eventList : ArrayList<AddEventDetails>
         database = FirebaseDatabase.getInstance()
         eventList = ArrayList()
         val eventRef: DatabaseReference = database.reference.child("Events")
-        eventRef.addValueEventListener(object : ValueEventListener{
+        eventRef.addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()){
                 for (eventSnapshot in snapshot.children){
                     val events = eventSnapshot.getValue(AddEventDetails::class.java)
                     events?.let { eventList.add(it) }
-                    setAdapter()
-                    binding.progressBar.visibility = View.GONE
-
                 }
+                    setAdapter()
+
+
+                }else{
+                    Toast.makeText(requireContext(), "No events found", Toast.LENGTH_SHORT).show()
+                }
+                binding.progressBar.visibility = View.GONE
             }
 
             override fun onCancelled(error: DatabaseError) {

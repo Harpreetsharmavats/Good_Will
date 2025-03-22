@@ -73,21 +73,29 @@ class MainActivity : AppCompatActivity(), PaymentResultListener {
         val eventRef = database.reference.child("Events")
         eventRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
                 for (events in snapshot.children) {
                     val eventLists = events.getValue(AddEventDetails::class.java)
                     eventLists?.eventName?.let { eventName.add(it) }
                     eventLists?.organizerName?.let { organizerName.add(it) }
                     eventLists?.addressOfEvent?.let { eventAddress.add(it) }
+                }
                     val adapter =
                         DropDownAdapter(this@MainActivity, eventName, organizerName, eventAddress)
                     binding.selectEvent.setAdapter(adapter)
-                    binding.progressBar.visibility = View.GONE
 
+
+
+                }else{
+                    Toast.makeText(this@MainActivity, "No events found", Toast.LENGTH_SHORT).show()
                 }
+                binding.progressBar.visibility = View.GONE
             }
 
             override fun onCancelled(error: DatabaseError) {
                 Log.d("AutoCompleteTextView", "Error $error")
+                Toast.makeText(this@MainActivity, "Failed to load events", Toast.LENGTH_SHORT).show()
+                binding.progressBar.visibility = View.GONE
             }
 
         })

@@ -1,5 +1,6 @@
 package com.example.goodwill.Fragments
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.goodwill.Adapter.ContributorsAdapter
+import com.example.goodwill.MainActivity
 import com.example.goodwill.Models.AddEventDetails
 import com.example.goodwill.Models.ContributorDetails
 import com.example.goodwill.R
@@ -35,6 +37,9 @@ private lateinit var contributorsList : ArrayList<ContributorDetails>
         binding = FragmentListofContributorsBinding.inflate(inflater,container,false)
         // Inflate the layout for this fragment
         showContributors()
+        binding.contribute.setOnClickListener {
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+        }
         return binding.root
     }
     private fun showContributors() {
@@ -44,13 +49,18 @@ private lateinit var contributorsList : ArrayList<ContributorDetails>
         val eventRef: DatabaseReference = database.reference.child("Contributors")
         eventRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (eventSnapshot in snapshot.children){
+                if (snapshot.exists() && snapshot.hasChildren()){
+                for (eventSnapshot in snapshot.children) {
                     val events = eventSnapshot.getValue(ContributorDetails::class.java)
                     events?.let { contributorsList.add(it) }
-                    setAdapter()
-                    binding.progressBar.visibility = View.GONE
-
                 }
+                    setAdapter()
+
+                }else{
+                    Toast.makeText(requireContext(), "No Contributors!", Toast.LENGTH_SHORT).show()
+                }
+                binding.progressBar.visibility = View.GONE
+
             }
 
             override fun onCancelled(error: DatabaseError) {
