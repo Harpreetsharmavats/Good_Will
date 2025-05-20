@@ -26,6 +26,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+
         database = Firebase.database.reference
 
         binding.continueAsContributor.setOnClickListener {

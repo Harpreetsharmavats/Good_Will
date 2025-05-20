@@ -7,11 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.goodwill.Models.AddEventDetails
 import com.example.goodwill.databinding.EventdetailsBinding
 
-class EventsAdapters(private val context: Context, private val events: MutableList<AddEventDetails>,val itemClicked : OnItemClick) :
+class EventsAdapters(
+    private val context: Context,
+    private val events: MutableList<AddEventDetails>,
+    val itemClicked: OnItemClick
+) :
     RecyclerView.Adapter<EventsAdapters.EventsViewHolder>() {
-interface OnItemClick{
-    fun onClickDelete(position: Int)
-}
+    interface OnItemClick {
+        fun onClickDelete(position: Int)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventsViewHolder {
         return EventsViewHolder(

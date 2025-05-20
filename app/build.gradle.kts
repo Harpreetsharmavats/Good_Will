@@ -38,6 +38,7 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildToolsVersion = "35.0.0"
 }
 
 dependencies {
@@ -58,7 +59,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation ("com.razorpay:checkout:1.6.40")
+    implementation (libs.checkout)
+    implementation("com.razorpay:checkout:1.6.7")
     implementation ("com.google.firebase:firebase-bom:32.8.0")
     implementation (libs.firebase.messaging.ktx)
     implementation ("com.google.firebase:firebase-messaging-ktx:23.4.0")
